@@ -3,6 +3,7 @@ import { getToken } from "~/composables/auth"
 import {toast,showFullLoading,hideFullLoading} from "~/composables/util"
 import store from "./store";
 
+let hasGetInfo = false
 router.beforeEach(async(to,from,next)=>{
 
     //显示Loading
@@ -22,8 +23,9 @@ router.beforeEach(async(to,from,next)=>{
         return next({path:from.path ? from.path : "/login" })
     }
     let hasNewRoutes =false 
-    if(token){
+    if(token && !hasGetInfo){
        let {menus} = await store.dispatch("getinfo")
+       hasGetInfo = true
        //动态添加路由
        hasNewRoutes = addRoutes(menus)
     }
