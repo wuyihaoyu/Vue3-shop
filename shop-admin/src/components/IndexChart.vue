@@ -15,15 +15,17 @@
         </div>
       </div>
     </template>
-    <div id="chart" style="width: 100%; height: 300px"></div>
+    <div id="chart" ref="el" style="width: 100%; height: 300px"></div>
   </el-card>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import * as echarts from "echarts";
+import { getStatistics3 } from "~/api/index.js";
+import { useResizeObserver } from "@vueuse/core";
 
-const current = ref({});
+const current = ref("week");
 const options = [
   {
     text: "近一个月",
@@ -41,28 +43,34 @@ const options = [
 
 const handleChoose = (type) => {
   current.value = type;
+  getData();
 };
 var myChart = null;
+
 onMounted(() => {
   var chartDom = document.getElementById("chart");
   myChart = echarts.init(chartDom);
   getData();
 });
 
-function getData() {
-  var option;
+onBeforeUnmount(() => {
+  if (myChart) {
+    echarts.dispose(myChart);
+  }
+});
 
-  option = {
+function getData() {
+  let option = {
     xAxis: {
       type: "category",
-      data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      data: [],
     },
     yAxis: {
       type: "value",
     },
     series: [
       {
-        data: [120, 200, 150, 80, 70, 110, 130],
+        data: [],
         type: "bar",
         showBackground: true,
         backgroundStyle: {
@@ -72,6 +80,19 @@ function getData() {
     ],
   };
 
-  option && myChart.setOption(option);
+  myChart.showLoading();
+  getStatistics3(current.value)
+    .then((res) => {
+      option.xAxis.data = res.x;
+      option.series[0].data = res.y;
+      option && myChart.setOption(option);
+    })
+    .finally(() => {
+      myChart.hideLoading();
+    });
 }
+const el = ref(null);
+useResizeObserver(el, (entries) => {
+  myChart.resize();
+});
 </script>

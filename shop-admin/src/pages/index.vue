@@ -73,7 +73,6 @@
        <IndexChart />
       </el-col>
       <el-col :span="12" :offset="0">
-        <IndexChart />
       </el-col>
     </el-row>
 

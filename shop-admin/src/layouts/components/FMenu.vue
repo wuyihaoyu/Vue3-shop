@@ -8,7 +8,7 @@
         @select="handleSelect"
         :collapse-transition = "false"
       >
-      <template v-for="(item,index) in asideMenus" :key="index">
+      <template v-for="item in asideMenus" :key="item.icon">
         <el-sub-menu v-if="item.child && item.child.length > 0" :index="item.name">
           <template #title>
             <el-icon>

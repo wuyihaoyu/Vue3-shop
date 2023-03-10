@@ -1,4 +1,5 @@
 <template>
+  <div>
   <div class="f-header">
     <span class="logo">
       <el-icon class="mr-1"><eleme-filled /></el-icon>
@@ -6,8 +7,8 @@
     </span>
 
     <el-icon class="icon-btn" @click="$store.commit('handleAsideWidth')">
-      <fold v-if="$store.state.asideWidth == '250px'"/>
-      <Expand v-else/>
+      <fold v-if="$store.state.asideWidth == '250px'" />
+      <Expand v-else />
     </el-icon>
 
     <el-tooltip effect="dark" content="刷新" placement="bottom">
@@ -82,6 +83,7 @@
       </el-form-item>
     </el-form>
   </form-drawer>
+</div>
 </template>
 
 <script setup>
@@ -98,8 +100,6 @@ const { formDrawerRef, form, rules, formRef, onSubmit, openRePasswordForm } =
   useRespassword();
 
 const { handleLogout } = useLogout();
-
-
 
 const handleCommand = (c) => {
   switch (c) {
@@ -122,7 +122,7 @@ const handleRefresh = () => {
 .f-header {
   @apply flex items-center bg-indigo-700 text-light-50 fixed top-0 left-0 right-0;
   height: 64px;
-  z-index:1000
+  z-index: 1000;
 }
 
 .logo {

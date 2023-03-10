@@ -6,6 +6,7 @@
       class="demo-tabs"
       @tab-remove="removeTab"
       style="min-width: 100px"
+      @tab-change="changeTab"
     >
       <el-tab-pane
         v-for="item in tabList"
@@ -13,7 +14,6 @@
         :key="item.path"
         :label="item.title"
         :name="item.path"
-        @tab-change="changeTab"
       >
       </el-tab-pane>
     </el-tabs>
@@ -38,7 +38,6 @@
 
 <script  setup>
 import { useTabList} from "~/composables/useTabList.js"
-
 const { activeTab,
         tabList,
         changeTab,
