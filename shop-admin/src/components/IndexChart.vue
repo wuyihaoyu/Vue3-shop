@@ -49,8 +49,11 @@ var myChart = null;
 
 onMounted(() => {
   var chartDom = document.getElementById("chart");
-  myChart = echarts.init(chartDom);
-  getData();
+
+  if (chartDom) {
+    myChart = echarts.init(chartDom);
+    getData();
+  }
 });
 
 onBeforeUnmount(() => {
@@ -93,6 +96,9 @@ function getData() {
 }
 const el = ref(null);
 useResizeObserver(el, (entries) => {
-  myChart.resize();
+  if(myChart){
+    myChart.resize();
+  }
+ 
 });
 </script>
