@@ -6,12 +6,12 @@
       text
       type="primary"
       size="small"
-      @click="$emit('edit')"
+      @click.stop="$emit('edit')"
     >
       <el-icon :size="12"><Edit></Edit></el-icon>
     </el-button>
 
-    <el-popconfirm title="是否要删除该分类？" confirmButtonText="确认" cancelButtonText="取消" @confirm="$emit('delete')">
+    <el-popconfirm title="是否要删除该分类？" confirmButtonText="确认" cancelButtonText="取消" @confirm.stop="$emit('delete')">
       <template #reference>
         <el-button
           class="px-1"

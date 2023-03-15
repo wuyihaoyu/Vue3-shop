@@ -18,11 +18,28 @@
               fit="cover"
               :lazy="true"
               class="w-full h-[150px]"
+              :preview-src-list="[item.url]"
+              :initial-index="0"
             ></el-image>
             <div class="image-title">{{ item.name }}</div>
             <div class="flex items-center justify-center p-2">
-              <el-button type="primary" size="small" text>重命名</el-button>
-              <el-button type="primary" size="small" text>删除</el-button>
+              <el-button
+                type="primary"
+                size="small"
+                text
+                @click="handleEdit(item)"
+                >重命名</el-button
+              >
+              <el-popconfirm
+                title="是否要删除该图片？"
+                confirmButtonText="确认"
+                cancelButtonText="取消"
+                @confirm="handleDelete(item.id)"
+              >
+                <template #reference>
+                  <el-button type="primary" size="small" text>删除</el-button>
+                </template>
+              </el-popconfirm>
             </div>
           </el-card>
         </el-col>
@@ -42,8 +59,9 @@
 </template>
 
 <script setup>
-import { ref, reactive } from "vue";
-import { getImageList } from "~/api/image.js";
+import { ref } from "vue";
+import { getImageList, updateImage, deleteImage } from "~/api/image.js";
+import { showPrompt, toast } from "~/composables/util.js";
 
 const currentPage = ref(1);
 const total = ref(0);
@@ -72,6 +90,34 @@ const loadData = (id) => {
   currentPage.value = 1;
   image_class_id.value = id;
   getData();
+};
+
+//重命名方法
+const handleEdit = (item) => {
+  showPrompt("重命名", item.name).then(({ value }) => {
+    loading.value = true;
+    updateImage(item.id, value)
+      .then(() => {
+        toast("修改成功");
+        getData();
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+  });
+};
+
+//删除图片
+const handleDelete = (id) => {
+  loading.value = true;
+  deleteImage([id])
+    .then((res) => {
+      toast("删除成功")
+      getData()
+    })
+    .finally(() => {
+      loading.value = false;
+    });
 };
 
 defineExpose({
