@@ -3,7 +3,7 @@ import nProgress from 'nprogress'
 
 
 //成功提示
-export function toast(message,type="success",dangerouslyUseHTMLString=false){
+export function toast(message,type="success",dangerouslyUseHTMLString=true ){
 
     ElNotification({
         message,

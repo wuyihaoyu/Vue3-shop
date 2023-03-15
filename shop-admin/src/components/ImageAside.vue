@@ -5,6 +5,8 @@
         :active="activeId == item.id"
         v-for="(item, index) in list"
         :key="index"
+        @edit="handleEdit(item)"
+        @delete="handleDelete(item.id)"
         >{{ item.name }}</AsideList
       >
     </div>
@@ -20,7 +22,7 @@
     </div>
   </el-aside>
 
-  <FormDrawer title="新增" ref="formDrawerRef" @submit="handleSubmit">
+  <FormDrawer :title="drawerTitle" ref="formDrawerRef" @submit="handleSubmit">
     <el-form
       :model="form"
       ref="formRef"
@@ -44,9 +46,14 @@
 </template>
 
 <script setup>
-import { ref, reactive } from "vue";
+import { ref, reactive, computed } from "vue";
 import AsideList from "~/components/AsideList.vue";
-import { getImageClassList, createImageClass } from "~/api/image_class.js";
+import {
+  getImageClassList,
+  createImageClass,
+  updateImageClass,
+  deleteImageClass 
+} from "~/api/image_class.js";
 import FormDrawer from "./FormDrawer.vue";
 import { toast } from "~/composables/util.js";
 
@@ -59,6 +66,9 @@ const activeId = ref(0);
 const currentPage = ref(1);
 const total = ref(0);
 const limit = ref(10);
+
+const editId = ref(0);
+const drawerTitle = computed(() => (editId.value ? "修改" : "新增"));
 
 function getData(p = null) {
   if (typeof p == "number") {
@@ -85,6 +95,9 @@ getData();
 const formDrawerRef = ref(null);
 
 const handleCreate = () => {
+  editId.value = 0;
+  form.name = "";
+  form.order = 50;
   formDrawerRef.value.open();
 };
 
@@ -99,10 +112,14 @@ const handleSubmit = () => {
   formRef.value.validate((valid) => {
     if (!valid) return;
     formDrawerRef.value.showLoading();
-    createImageClass(form)
+    const fun = editId.value
+      ? updateImageClass(editId.value, form)
+      : createImageClass(form);
+
+    fun
       .then((res) => {
-        toast("新增成功");
-        getData(1);
+        toast(drawerTitle.value + "成功");
+        getData(editId.value ? currentPage.value : 1);
         formDrawerRef.value.close();
       })
       .finally(() => {
@@ -119,6 +136,25 @@ const rules = {
       trigger: "blur",
     },
   ],
+};
+
+const handleEdit = (row) => {
+  editId.value = row.id;
+  form.name = row.name;
+  form.order = row.order;
+  formDrawerRef.value.open();
+};
+
+const handleDelete = (id) => {
+  loading.value = true;
+  deleteImageClass(id)
+    .then((res) => {
+      toast("删除成功")
+      getData()
+    })
+    .finally(() => {
+      loading.value = false;
+    });
 };
 
 defineExpose({
