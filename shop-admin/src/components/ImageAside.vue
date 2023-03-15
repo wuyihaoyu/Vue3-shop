@@ -7,6 +7,7 @@
         :key="index"
         @edit="handleEdit(item)"
         @delete="handleDelete(item.id)"
+        @click="handleChangeActiveId(item.id)"
         >{{ item.name }}</AsideList
       >
     </div>
@@ -52,7 +53,7 @@ import {
   getImageClassList,
   createImageClass,
   updateImageClass,
-  deleteImageClass 
+  deleteImageClass,
 } from "~/api/image_class.js";
 import FormDrawer from "./FormDrawer.vue";
 import { toast } from "~/composables/util.js";
@@ -82,7 +83,7 @@ function getData(p = null) {
       list.value = res.list;
       let item = list.value[0];
       if (item) {
-        activeId.value = item.id;
+        handleChangeActiveId(item.id);
       }
     })
     .finally(() => {
@@ -149,13 +150,20 @@ const handleDelete = (id) => {
   loading.value = true;
   deleteImageClass(id)
     .then((res) => {
-      toast("删除成功")
-      getData()
+      toast("删除成功");
+      getData();
     })
     .finally(() => {
       loading.value = false;
     });
 };
+
+//选中图库分类id
+const emit = defineEmits(["change"])
+function handleChangeActiveId(id) {
+  activeId.value = id;
+  emit("change",id)
+}
 
 defineExpose({
   handleCreate,
