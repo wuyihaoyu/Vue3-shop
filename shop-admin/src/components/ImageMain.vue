@@ -56,12 +56,17 @@
       />
     </div>
   </el-main>
+
+  <el-drawer v-model="drawer" title="上传图片">
+    <UploadFile :data="{image_class_id}" @success="handleUploadSuccess"></UploadFile>
+  </el-drawer>
 </template>
 
 <script setup>
 import { ref } from "vue";
 import { getImageList, updateImage, deleteImage } from "~/api/image.js";
 import { showPrompt, toast } from "~/composables/util.js";
+import UploadFile from "~/components/UploadFile.vue";
 
 const currentPage = ref(1);
 const total = ref(0);
@@ -69,6 +74,12 @@ const limit = ref(10);
 const list = ref([]);
 const loading = ref(false);
 const image_class_id = ref(0);
+//上传图片
+const drawer = ref(false);
+
+const openUploadFile = () => {
+  drawer.value = true;
+};
 
 function getData(p = null) {
   if (typeof p == "number") {
@@ -112,16 +123,22 @@ const handleDelete = (id) => {
   loading.value = true;
   deleteImage([id])
     .then((res) => {
-      toast("删除成功")
-      getData()
+      toast("删除成功");
+      getData();
     })
     .finally(() => {
       loading.value = false;
     });
 };
 
+//上传成功
+const handleUploadSuccess=()=>{
+  getData(1)
+}
+
 defineExpose({
   loadData,
+  openUploadFile
 });
 </script>
 
