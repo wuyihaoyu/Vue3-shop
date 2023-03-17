@@ -159,10 +159,10 @@ const handleDelete = (id) => {
 };
 
 //选中图库分类id
-const emit = defineEmits(["change"])
+const emit = defineEmits(["change"]);
 function handleChangeActiveId(id) {
   activeId.value = id;
-  emit("change",id)
+  emit("change", id);
 }
 
 defineExpose({

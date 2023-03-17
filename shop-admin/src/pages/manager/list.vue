@@ -1,5 +1,25 @@
 <template>
   <el-card shadow="never" class="border-0">
+    <el-form :model="searchForm" label-width="80px" class="mb-3" size="small">
+      <el-row :gutter="20">
+        <el-col :span="8" :offset="0">
+          <el-form-item label="关键词">
+            <el-input
+              v-model="searchForm.keyword"
+              placeholder="管理员昵称"
+              clearable
+            ></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="8" :offset="8">
+          <div class="flex items-center justify-center">
+            <el-button type="primary" @click="getData">搜索</el-button>
+            <el-button @click="resetSearchForm">重置</el-button>
+          </div>
+        </el-col>
+      </el-row>
+    </el-form>
+
     <div class="flex items-center justify-between mb-4">
       <el-button type="primary" size="small" @click="handleCreate"
         >新增</el-button
@@ -13,8 +33,34 @@
       </el-tooltip>
     </div>
     <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
-      <el-table-column prop="title" label="公告标题" />
-      <el-table-column prop="create_time" label="发布时间" width="380" />
+      <el-table-column label="管理员" width="200">
+        <template #default="{ row }">
+          <div class="flex items-center">
+            <el-avatar :size="40" :src="row.avatar">
+              <img src="" />
+            </el-avatar>
+            <div class="ml-3">
+              <h6>{{ row.username }}</h6>
+              <small>ID:{{ row.id }}</small>
+            </div>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column label="所属管理员" align="center">
+        <template #default="{ row }">
+          {{ row.role?.name || "-" }}
+        </template>
+      </el-table-column>
+      <el-table-column label="状态" width="120">
+        <template #default="{ row }">
+          <el-switch
+            :modelValue="row.status"
+            :active-value="1"
+            :inactive-value="0"
+          >
+          </el-switch>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" width="180" align="center">
         <template #default="scope">
           <el-button
@@ -26,7 +72,7 @@
           >
 
           <el-popconfirm
-            title="是否要删除该公告？"
+            title="是否要删除该管理员？"
             confirmButtonText="确认"
             cancelButtonText="取消"
             @confirm="handleDelete(scope.row.id)"
@@ -72,8 +118,8 @@
     </FormDrawer>
   </el-card>
 </template>
-
-<script setup>
+  
+  <script setup>
 import { computed, reactive, ref } from "vue";
 import {
   getNoticeList,
@@ -81,8 +127,19 @@ import {
   deleteNotice,
   updateNotice,
 } from "~/api/notice.js";
+
+import { getManagerList } from "~/api/manager.js";
 import FormDrawer from "~/components/FormDrawer.vue";
 import { toast } from "~/composables/util";
+
+const searchForm = reactive({
+  keyword: "",
+});
+
+const resetSearchForm = () => {
+  searchForm.keyword = "";
+  getData();
+};
 
 const tableData = ref([]);
 const loading = ref(false);
@@ -97,7 +154,7 @@ function getData(p = null) {
   }
 
   loading.value = true;
-  getNoticeList(currentPage.value)
+  getManagerList(currentPage.value, searchForm)
     .then((res) => {
       tableData.value = res.list;
       total.value = res.totalCount;
