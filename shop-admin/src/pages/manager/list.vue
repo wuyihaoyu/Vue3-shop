@@ -118,7 +118,7 @@
           <el-input v-model="form.password" placeholder="密码"></el-input>
         </el-form-item>
         <el-form-item label="头像" prop="avatar">
-          <el-input v-model="form.avatar"></el-input>
+          <ChooseImage v-model="form.avatar"/>
         </el-form-item>
         <el-form-item label="所属角色" prop="role_id">
           <el-select v-model="form.role_id" placeholder="选择所属角色">
@@ -146,6 +146,7 @@
   
   <script setup>
 import { computed, reactive, ref } from "vue";
+import ChooseImage from "~/components/ChooseImage.vue";
 
 import {
   getManagerList,
