@@ -13,3 +13,7 @@ export function updateNotice(id,data){
 export function deleteNotice(id){
     return axios.post(`/admin/notice/${id}/delete`)
 }
+
+export function getRuleList(page){
+    return axios.get(`/admin/rule/${page}`)
+}
