@@ -48,7 +48,6 @@
   </el-card>
 </template>
 <script setup>
-import { ref, reactive, computed } from "vue"
 import FormDrawer from "~/components/FormDrawer.vue";
 import {
   getNoticeList,
@@ -56,9 +55,6 @@ import {
   updateNotice,
   deleteNotice
 } from "~/api/notice"
-import {
-  toast
-} from "~/composables/util"
 import { useInitTable, useInitForm } from '~/composables/useCommon.js'
 
 const {
@@ -67,9 +63,11 @@ const {
   currentPage,
   total,
   limit,
-  getData
+  getData,
+  handleDelete
 } = useInitTable({
-  getList: getNoticeList
+  getList: getNoticeList,
+  delete:deleteNotice
 })
 
 const {
@@ -103,16 +101,4 @@ const {
   create: createNotice
 })
 
-
-// 删除
-const handleDelete = (id) => {
-  loading.value = true
-  deleteNotice(id).then(res => {
-    toast("删除成功")
-    getData()
-  })
-    .finally(() => {
-      loading.value = false
-    })
-}
 </script>

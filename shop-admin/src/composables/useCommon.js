@@ -45,6 +45,32 @@ export function useInitTable(opt = {}) {
 
     getData()
 
+    // 删除
+const handleDelete = (id)=>{
+    loading.value = true
+    opt.delete(id).then(res=>{
+      toast("删除成功")
+      getData()
+    })
+    .finally(()=>{
+      loading.value = false
+    })
+  }
+  
+  
+  // 修改状态
+  const handleStatusChange = (status,row)=>{
+    row.statusLoading = true
+    opt.updateStatus(row.id,status)
+    .then(res=>{
+      toast("修改状态成功")
+      row.status = status
+    })
+    .finally(()=>{
+      row.statusLoading = false
+    })
+  }
+
     return {
         searchForm,
         resetSearchForm,
@@ -53,7 +79,9 @@ export function useInitTable(opt = {}) {
         currentPage,
         total,
         limit,
-        getData
+        getData,
+        handleDelete,
+        handleStatusChange
     }
 }
 
