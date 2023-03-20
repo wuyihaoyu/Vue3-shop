@@ -14,5 +14,5 @@
 </template>
 
 <script setup>
-const emit = defineEmits(["create","refresh"])
+ defineEmits(["create","refresh"])
 </script>
