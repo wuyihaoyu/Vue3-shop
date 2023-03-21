@@ -38,12 +38,16 @@
     </div>
 </template>
 <script setup>
-import { useRouter,useRoute } from 'vue-router';
+import { useRouter,useRoute,onBeforeRouteUpdate} from 'vue-router';
 import { computed,ref } from 'vue'
 import { useStore } from 'vuex';
 
 const route = useRoute() 
 const defaultActive = ref(route.path)
+
+onBeforeRouteUpdate((to,from)=>{
+  defaultActive.value = to.path
+})
 
 const store = useStore()
 const isCollapse = computed(()=>
