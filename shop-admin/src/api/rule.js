@@ -5,7 +5,7 @@ export function getRuleList(page){
 }
 
 export function createRule(data){
-    return axios.post("/admin/rule/${data}") 
+    return axios.post("/admin/rule",data ) 
 }
 
 export function updateRule(id,data){
