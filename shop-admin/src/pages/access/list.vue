@@ -1,6 +1,6 @@
 <template>
   <el-card shadow="never" class="border-0">
-    <ListHeader @refresh="getData" @create="handleCreate" />
+    <ListHeader @create="handleCreate" @refresh="getData" />
     <el-tree
       :data="tableData"
       :props="{ label: 'name', children: 'child' }"
@@ -10,20 +10,20 @@
     >
       <template #default="{ node, data }">
         <div class="custom-tree-node">
-          <el-tag size="small" :type="data.menu ? '' : 'info'"
-            >{{ data.menu ? "菜单" : "权限" }}
-          </el-tag>
+          <el-tag size="small" :type="data.menu ? '' : 'info'">{{
+            data.menu ? "菜单" : "权限"
+          }}</el-tag>
           <el-icon v-if="data.icon" :size="16" class="ml-2">
-            <component :is="data.icon"></component>
+            <component :is="data.icon" />
           </el-icon>
           <span>{{ data.name }}</span>
+
           <div class="ml-auto">
             <el-switch
               :modelValue="data.status"
               :active-value="1"
               :inactive-value="0"
-            >
-            </el-switch>
+            />
             <el-button
               text
               type="primary"
@@ -50,28 +50,31 @@
           <el-cascader
             v-model="form.rule_id"
             :options="options"
-            placeholder="请选择上级菜单"
             :props="{
-              value:'id',
+              value: 'id',
               label: 'name',
               children: 'child',
               checkStrictly: true,
               emitPath: false,
             }"
-          ></el-cascader>
+            placeholder="请选择上级菜单"
+          />
         </el-form-item>
-
         <el-form-item label="菜单/规则" prop="menu">
           <el-radio-group v-model="form.menu">
             <el-radio :label="1" border>菜单</el-radio>
-            <el-radio :label="2" border>权限</el-radio>
+            <el-radio :label="0" border>规则</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="名称" prop="name">
-          <el-input v-model="form.name" style="width: 30%" placeholder="名称"></el-input>
+          <el-input
+            v-model="form.name"
+            style="width: 30%"
+            placeholder="名称"
+          ></el-input>
         </el-form-item>
         <el-form-item label="菜单图标" prop="icon" v-if="form.menu == 1">
-          <el-input v-model="form.icon"></el-input>
+          <IconSelect v-model="form.icon" />
         </el-form-item>
         <el-form-item
           label="前端路由"
@@ -81,7 +84,7 @@
           <el-input v-model="form.frontpath" placeholder="前端路由"></el-input>
         </el-form-item>
         <el-form-item label="后端规则" prop="condition" v-if="form.menu == 0">
-          <el-input v-model="form.condition" palceholder="后端规则"></el-input>
+          <el-input v-model="form.condition" placeholder="后端规则"></el-input>
         </el-form-item>
         <el-form-item label="请求方式" prop="method" v-if="form.menu == 0">
           <el-select
@@ -94,35 +97,27 @@
               :key="item"
               :label="item"
               :value="item"
-            ></el-option>
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="排序" prop="order">
-          <el-input-number
-            v-model="form.order"
-            :min="0"
-            :max="1000"
-          ></el-input-number>
+          <el-input-number v-model="form.order" :min="0" :max="1000" />
         </el-form-item>
       </el-form>
     </FormDrawer>
   </el-card>
 </template>
-
 <script setup>
 import { ref } from "vue";
 import ListHeader from "~/components/ListHeader.vue";
-
-import { getRuleList, updateRule, createRule } from "~/api/rule.js";
+import FormDrawer from "~/components/FormDrawer.vue";
+import IconSelect from "~/components/IconSelect.vue";
+import { getRuleList, createRule, updateRule } from "~/api/rule.js";
 
 import { useInitTable, useInitForm } from "~/composables/useCommon.js";
 
-import FormDrawer from "~/components/FormDrawer.vue";
-
-const defaultExpandedKeys = ref([]);
-
 const options = ref([]);
-
+const defaultExpandedKeys = ref([]);
 const { loading, tableData, getData } = useInitTable({
   getList: getRuleList,
   onGetListSuccess: (res) => {
@@ -159,7 +154,6 @@ const {
   create: createRule,
 });
 </script>
-
 <style>
 .custom-tree-node {
   flex: 1;
@@ -168,7 +162,6 @@ const {
   font-size: 14px;
   padding-right: 8px;
 }
-
 .el-tree-node__content {
   padding: 20px 0;
 }
