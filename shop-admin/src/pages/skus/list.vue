@@ -1,9 +1,22 @@
 <template>
   <el-card shadow="never" class="border-0">
     <!-- 新增|刷新 -->
-    <ListHeader @create="handleCreate" @refresh="getData"></ListHeader>
+    <ListHeader
+      layout="create,refresh,delete"
+      @create="handleCreate"
+      @refresh="getData"
+      @delete="handleMultiDelete"
+    ></ListHeader>
 
-    <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
+    <el-table
+      ref="multipleTableRef"
+      @selection-change="handleSelectionChange"
+      :data="tableData"
+      stripe
+      style="width: 100%"
+      v-loading="loading"
+    >
+      <el-table-column type="selection" width="55" />
       <el-table-column prop="name" label="规格名称" />
       <el-table-column prop="default" label="规格值" width="380" />
       <el-table-column prop="order" label="排序" />
@@ -29,7 +42,6 @@
             @click="handleEdit(scope.row)"
             >修改</el-button
           >
-
           <el-popconfirm
             title="是否要删除该规格？"
             confirmButtonText="确认"
@@ -55,7 +67,12 @@
       />
     </div>
 
-    <FormDrawer destroyOnClose ref="formDrawerRef" :title="drawerTitle" @submit="handleSubmit">
+    <FormDrawer
+      destroyOnClose
+      ref="formDrawerRef"
+      :title="drawerTitle"
+      @submit="handleSubmit"
+    >
       <el-form
         :model="form"
         ref="formRef"
@@ -151,4 +168,26 @@ const {
   update: updateSkus,
   create: createSkus,
 });
+
+const multiSelectionIds = ref([]);
+
+const handleSelectionChange = (e) => {
+  multiSelectionIds.value = e.map((o) => o.id);
+};
+
+const multipleTableRef =ref(null)
+
+const handleMultiDelete = () => {
+  loading.value = true;
+  deleteSkus(multiSelectionIds.value).then((res)=>{
+     toast("删除成功")
+     //清空选中
+     if(multipleTableRef.value){
+        multipleTableRef.value.clearSelection()
+     }
+     getData()
+  }).finally(()=>{
+    loading.value = false
+  });
+};
 </script>

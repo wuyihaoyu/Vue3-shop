@@ -1,7 +1,7 @@
 <template>
   <el-card shadow="never" class="border-0">
     <!-- 新增|刷新 -->
-    <ListHeader @create="handleCreate" @refresh="getData"></ListHeader>
+    <ListHeader layout="create,refresh" @create="handleCreate" @refresh="getData"></ListHeader>
 
     <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
       <el-table-column prop="name" label="角色名称" />
