@@ -99,11 +99,13 @@
       <el-tree-v2
         ref="elTreeRef"
         node-key="id"
+        :check-strictly="checkStrictly"
         :default-expanded-keys="defaultExpandedKeys"
         :data="ruleList"
         :props="{ label: 'name', children: 'child' }"
         show-checkbox
         :height="treeHeight"
+        @check="handleTreeCheck"
       >
         <template #default="{ node, data }">
           <div class="flex items-center">
@@ -122,12 +124,14 @@ import { ref } from "vue";
 import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from "~/components/FormDrawer.vue";
 import { getRuleList } from "~/api/rule";
+import { toast} from "~/composables/util"
 import {
   getRoleList,
   createRole,
   updateRole,
   deleteRole,
   updateRoleStatus,
+  setRoleRules,
 } from "~/api/role";
 import { useInitTable, useInitForm } from "~/composables/useCommon.js";
 
@@ -182,10 +186,12 @@ const roleId = ref(0);
 const defaultExpandedKeys = ref([]);
 const elTreeRef = ref(null);
 const ruleIds = ref([]);
+const checkStrictly = ref(false)
 
 const openSetRule = (row) => {
   roleId.value = row.id;
   treeHeight.value = window.innerHeight - 180;
+  checkStrictly.value = true
   getRuleList(1).then((res) => {
     ruleList.value = res.list;
     defaultExpandedKeys.value = res.list.map((o) => o.id);
@@ -193,11 +199,28 @@ const openSetRule = (row) => {
 
     //當前角色擁有的权限id
     ruleIds.value = row.rules.map((o) => o.id);
-    setTimeout(()=>{
-        elTreeRef.value.setCheckedKeys(ruleIds.value)
-    },150)
+    setTimeout(() => {
+      elTreeRef.value.setCheckedKeys(ruleIds.value);
+      checkStrictly.value = false
+    }, 150);
   });
 };
 
-const handleSetRuleSubmit = () => {};
+const handleSetRuleSubmit = () => {
+  setRUleFormDrawerRef.value.showLoading();
+  setRoleRules(roleId.value, ruleIds.value)
+    .then((res) => {
+      toast("配置成功")
+      getData()
+      setRUleFormDrawerRef.value.close()
+    })
+    .finally(() => {
+      setRUleFormDrawerRef.value.hideLoading();
+    });
+};
+
+const handleTreeCheck = (...e) => {
+  const { checkedKeys, halfCheckedKeys } = e[1];
+  ruleIds.value = [...checkedKeys, ...halfCheckedKeys];
+};
 </script>
