@@ -55,7 +55,7 @@
       />
     </div>
 
-    <FormDrawer ref="formDrawerRef" :title="drawerTitle" @submit="handleSubmit">
+    <FormDrawer destroyOnClose ref="formDrawerRef" :title="drawerTitle" @submit="handleSubmit">
       <el-form
         :model="form"
         ref="formRef"
@@ -79,7 +79,7 @@
           </el-switch>
         </el-form-item>
         <el-form-item label="规格值" prop="default">
-          <el-input v-model="form.default" placeholder="规格值"></el-input>
+          <TagInput v-model="form.default" />
         </el-form-item>
       </el-form>
     </FormDrawer>
@@ -89,6 +89,7 @@
 import { ref } from "vue";
 import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from "~/components/FormDrawer.vue";
+import TagInput from "~/components/TagInput.vue";
 import { toast } from "~/composables/util";
 import {
   getSkusList,
