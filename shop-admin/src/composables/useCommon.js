@@ -46,30 +46,51 @@ export function useInitTable(opt = {}) {
     getData()
 
     // 删除
-const handleDelete = (id)=>{
-    loading.value = true
-    opt.delete(id).then(res=>{
-      toast("删除成功")
-      getData()
-    })
-    .finally(()=>{
-      loading.value = false
-    })
-  }
-  
-  
-  // 修改状态
-  const handleStatusChange = (status,row)=>{
-    row.statusLoading = true
-    opt.updateStatus(row.id,status)
-    .then(res=>{
-      toast("修改状态成功")
-      row.status = status
-    })
-    .finally(()=>{
-      row.statusLoading = false
-    })
-  }
+    const handleDelete = (id) => {
+        loading.value = true
+        opt.delete(id).then(res => {
+            toast("删除成功")
+            getData()
+        })
+            .finally(() => {
+                loading.value = false
+            })
+    }
+
+
+    // 修改状态
+    const handleStatusChange = (status, row) => {
+        row.statusLoading = true
+        opt.updateStatus(row.id, status)
+            .then(res => {
+                toast("修改状态成功")
+                row.status = status
+            })
+            .finally(() => {
+                row.statusLoading = false
+            })
+    }
+    const multiSelectionIds = ref([]);
+
+    const handleSelectionChange = (e) => {
+        multiSelectionIds.value = e.map((o) => o.id);
+    };
+
+    const multipleTableRef = ref(null)
+
+    const handleMultiDelete = () => {
+        loading.value = true;
+        opt.delete(multiSelectionIds.value).then((res) => {
+            toast("删除成功")
+            //清空选中
+            if (multipleTableRef.value) {
+                multipleTableRef.value.clearSelection()
+            }
+            getData()
+        }).finally(() => {
+            loading.value = false
+        });
+    };
 
     return {
         searchForm,
@@ -81,7 +102,10 @@ const handleDelete = (id)=>{
         limit,
         getData,
         handleDelete,
-        handleStatusChange
+        handleStatusChange,
+        handleSelectionChange,
+        multipleTableRef,
+        handleMultiDelete
     }
 }
 
