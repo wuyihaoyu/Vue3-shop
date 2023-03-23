@@ -1,4 +1,13 @@
 <template>
+  <div>
+    <el-tabs v-model="searchForm.tab" @tab-change="getData">
+      <el-tab-pane
+        v-for="(item, index) in tabbars"
+        :label="item.name"
+        :name="item.key"
+        :key="index"
+      ></el-tab-pane>
+    </el-tabs>
     <el-card shadow="never" class="border-0">
       <!-- 搜索 -->
       <el-form :model="searchForm" label-width="80px" class="mb-3" size="small">
@@ -6,8 +15,8 @@
           <el-col :span="8" :offset="0">
             <el-form-item label="关键词">
               <el-input
-                v-model="searchForm.keyword"
-                placeholder="管理员昵称"
+                v-model="searchForm.title"
+                placeholder="商品名称"
                 clearable
               ></el-input>
             </el-form-item>
@@ -20,11 +29,16 @@
           </el-col>
         </el-row>
       </el-form>
-  
+
       <!-- 新增|刷新 -->
-     <ListHeader @create="handleCreate" @refresh="getData"></ListHeader>
-  
-      <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
+      <ListHeader @create="handleCreate" @refresh="getData"></ListHeader>
+
+      <el-table
+        :data="tableData"
+        stripe
+        style="width: 100%"
+        v-loading="loading"
+      >
         <el-table-column label="管理员" width="200">
           <template #default="{ row }">
             <div class="flex items-center">
@@ -71,7 +85,7 @@
                 @click="handleEdit(scope.row)"
                 >修改</el-button
               >
-  
+
               <el-popconfirm
                 title="是否要删除该管理员？"
                 confirmButtonText="确认"
@@ -86,7 +100,7 @@
           </template>
         </el-table-column>
       </el-table>
-  
+
       <div class="flex items-center justify-center mt-5">
         <el-pagination
           background
@@ -97,8 +111,12 @@
           @current-change="getData"
         />
       </div>
-  
-      <FormDrawer ref="formDrawerRef" :title="drawerTitle" @submit="handleSubmit">
+
+      <FormDrawer
+        ref="formDrawerRef"
+        :title="drawerTitle"
+        @submit="handleSubmit"
+      >
         <el-form
           :model="form"
           ref="formRef"
@@ -137,71 +155,101 @@
         </el-form>
       </FormDrawer>
     </el-card>
-  </template>
+  </div>
+</template>
   <script setup>
-  import { ref } from "vue";
-  import FormDrawer from "~/components/FormDrawer.vue";
-  import ChooseImage from "~/components/ChooseImage.vue";
-  import ListHeader from "~/components/ListHeader.vue"
-  import {
-    getGoodsList,
-    updateGoodsStatus,
-    createGoods,
-    updateGoods,
-    deleteGoods,
-  } from "~/api/goods";
-  
-  import { useInitTable, useInitForm } from "~/composables/useCommon.js";
-  
-  const roles = ref([]);
-  
-  const {
-    searchForm,
-    resetSearchForm,
-    tableData,
-    loading,
-    currentPage,
-    total,
-    limit,
-    getData,
-    handleDelete,
-    handleStatusChange,
-  } = useInitTable({
-    searchForm: {
-      keyword: "",
-    },
-    getList: getGoodsList,
-    onGetListSuccess: (res) => {
-      tableData.value = res.list.map((o) => {
-        o.statusLoading = false;
-        return o;
-      });
-      total.value = res.totalCount;
-      roles.value = res.roles;
-    },
-    delete: deleteGoods,
-    updateStatus: updateGoodsStatus,
-  });
-  
-  const {
-    formDrawerRef,
-    formRef,
-    form,
-    rules,
-    drawerTitle,
-    handleSubmit,
-    handleCreate,
-    handleEdit,
-  } = useInitForm({
-    form: {
-      username: "",
-      password: "",
-      role_id: null,
-      status: 1,
-      avatar: "",
-    },
-    getData,
-    update: updateGoods,
-    create: createGoods,
-  });
-  </script>
+import { ref } from "vue";
+import FormDrawer from "~/components/FormDrawer.vue";
+import ChooseImage from "~/components/ChooseImage.vue";
+import ListHeader from "~/components/ListHeader.vue";
+import {
+  getGoodsList,
+  updateGoodsStatus,
+  createGoods,
+  updateGoods,
+  deleteGoods,
+} from "~/api/goods";
+
+import { useInitTable, useInitForm } from "~/composables/useCommon.js";
+
+const roles = ref([]);
+
+const {
+  searchForm,
+  resetSearchForm,
+  tableData,
+  loading,
+  currentPage,
+  total,
+  limit,
+  getData,
+  handleDelete,
+  handleStatusChange,
+} = useInitTable({
+  searchForm: {
+    title: "",
+    tab: "all",
+    category_id: null,
+  },
+  getList: getGoodsList,
+  onGetListSuccess: (res) => {
+    tableData.value = res.list.map((o) => {
+      o.statusLoading = false;
+      return o;
+    });
+    total.value = res.totalCount;
+    roles.value = res.roles;
+  },
+  delete: deleteGoods,
+  updateStatus: updateGoodsStatus,
+});
+
+const {
+  formDrawerRef,
+  formRef,
+  form,
+  rules,
+  drawerTitle,
+  handleSubmit,
+  handleCreate,
+  handleEdit,
+} = useInitForm({
+  form: {
+    username: "",
+    password: "",
+    role_id: null,
+    status: 1,
+    avatar: "",
+  },
+  getData,
+  update: updateGoods,
+  create: createGoods,
+});
+
+const tabbars = [
+  {
+    key: "all",
+    name: "全部",
+  },
+  {
+    key: "checking",
+    name: "审核中",
+  },
+  {
+    key: "saling",
+    name: "出售中",
+  },
+  {
+    key: "off",
+    name: "已下架",
+  },
+  {
+    key: "min_stock",
+    name: "库存预警",
+  },
+  {
+    key: "delete",
+    name: "回收站",
+  },
+];
+</script>
