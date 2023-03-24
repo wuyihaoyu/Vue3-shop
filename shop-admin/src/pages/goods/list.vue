@@ -10,26 +10,33 @@
     </el-tabs>
     <el-card shadow="never" class="border-0">
       <!-- 搜索 -->
-      <el-form :model="searchForm" label-width="80px" class="mb-3" size="small">
-        <el-row :gutter="20">
-          <el-col :span="8" :offset="0">
-            <el-form-item label="关键词">
-              <el-input
-                v-model="searchForm.title"
-                placeholder="商品名称"
-                clearable
-              ></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8" :offset="8">
-            <div class="flex items-center justify-end">
-              <el-button type="primary" @click="getData">搜索</el-button>
-              <el-button @click="resetSearchForm">重置</el-button>
-            </div>
-          </el-col>
-        </el-row>
-      </el-form>
+      <Search :model="searchForm" @search="getData" @reset="resetSearchForm">
+        <SearchItem  label="关键词">
+          <el-input
+            v-model="searchForm.title"
+            placeholder="商品名称"
+            clearable
+          ></el-input>
+        </SearchItem>
 
+        <template #show>
+          <SearchItem label="商品分类">
+            <el-select
+              v-model="searchForm.category_id"
+              placeholder="请选择商品分类"
+              clearable
+            >
+              <el-option
+                v-for="item in category_list"
+                :key="item.value"
+                :label="item.name"
+                :value="item.id"
+              >
+              </el-option>
+            </el-select>
+          </SearchItem>
+        </template>
+      </Search>
       <!-- 新增|刷新 -->
       <ListHeader @create="handleCreate" @refresh="getData"></ListHeader>
 
@@ -198,6 +205,9 @@ import { ref } from "vue";
 import FormDrawer from "~/components/FormDrawer.vue";
 import ChooseImage from "~/components/ChooseImage.vue";
 import ListHeader from "~/components/ListHeader.vue";
+import { getCategoryList } from "~/api/category";
+import Search from "~/components/Search.vue";
+import SearchItem from "~/components/SearchItem.vue";
 import {
   getGoodsList,
   updateGoodsStatus,
@@ -288,4 +298,10 @@ const tabbars = [
     name: "回收站",
   },
 ];
+
+//商品分类
+const category_list = ref([]);
+getCategoryList().then((res) => {
+  category_list.value = res;
+});
 </script>
