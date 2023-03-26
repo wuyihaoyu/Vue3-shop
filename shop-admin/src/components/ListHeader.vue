@@ -24,6 +24,7 @@
           >
         </template>
       </el-popconfirm>
+      <slot/>
     </div>
     <el-tooltip
       v-if="btns.includes('refresh')"

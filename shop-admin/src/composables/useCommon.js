@@ -70,18 +70,34 @@ export function useInitTable(opt = {}) {
                 row.statusLoading = false
             })
     }
-    const multiSelectionIds = ref([]);
 
+    //多选选中ID
+    const multiSelectionIds = ref([]);
     const handleSelectionChange = (e) => {
         multiSelectionIds.value = e.map((o) => o.id);
     };
 
     const multipleTableRef = ref(null)
-
+   //批量删除
     const handleMultiDelete = () => {
         loading.value = true;
         opt.delete(multiSelectionIds.value).then((res) => {
             toast("删除成功")
+            //清空选中
+            if (multipleTableRef.value) {
+                multipleTableRef.value.clearSelection()
+            }
+            getData()
+        }).finally(() => {
+            loading.value = false
+        });
+    };
+
+    //批量修改状态
+    const handleMultiStatusChange = (status) => {
+        loading.value = true;
+        opt.updateStatus(multiSelectionIds.value,status).then((res) => {
+            toast("修改状态成功")
             //清空选中
             if (multipleTableRef.value) {
                 multipleTableRef.value.clearSelection()
@@ -105,7 +121,8 @@ export function useInitTable(opt = {}) {
         handleStatusChange,
         handleSelectionChange,
         multipleTableRef,
-        handleMultiDelete
+        handleMultiDelete,
+        handleMultiStatusChange
     }
 }
 

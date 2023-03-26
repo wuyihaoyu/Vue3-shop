@@ -20,9 +20,16 @@
         </template>
       </Search>
       <!-- 新增|刷新 -->
-      <ListHeader @create="handleCreate" @refresh="getData"></ListHeader>
+      <ListHeader layout="create,delete,refresh" @delete="handleMultiDelete" @create="handleCreate" @refresh="getData">
+        <el-button size="small" @click="handleMultiStatusChange(1)"
+          v-if="searchForm.tab == 'all' || searchForm.tab == 'off'">上架</el-button>
+        <el-button size="small" @click="handleMultiStatusChange(0)"
+          v-if="searchForm.tab == 'all' || searchForm.tab == 'saling'">下架</el-button>
+      </ListHeader>
 
-      <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
+      <el-table ref="multipleTableRef" @selection-change="handleSelectionChange" :data="tableData" stripe
+        style="width: 100%" v-loading="loading">
+        <el-table-column type="selection" width="55" />
         <el-table-column label="商品" width="300">
           <template #default="{ row }">
             <div class="flex">
@@ -98,16 +105,12 @@
           <el-form-item label="封面" prop="cover">
             <ChooseImage v-model="form.cover"></ChooseImage>
           </el-form-item>
-
           <el-form-item label="商品分类" prop="category_id">
             <el-select v-model="form.category_id" placeholder="选择所属商品分类">
               <el-option v-for="item in category_list" :key="item.id" :label="item.name" :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
-
-
-
           <el-form-item label="商品描述" prop="desc">
             <el-input v-model="form.desc" placeholder="选填，商品卖点" type="textarea" />
           </el-form-item>
@@ -179,6 +182,11 @@ import { useInitTable, useInitForm } from "~/composables/useCommon.js";
 
 
 const {
+  handleSelectionChange,
+  multipleTableRef,
+  handleMultiDelete,
+  handleMultiStatusChange,
+
   searchForm,
   resetSearchForm,
   tableData,
@@ -188,7 +196,6 @@ const {
   limit,
   getData,
   handleDelete,
-  handleStatusChange,
 } = useInitTable({
   searchForm: {
     title: "",
