@@ -1,10 +1,22 @@
 <template>
   <div v-if="modelValue">
-    <el-image :src="modelValue" fit="cover" class="w-[100px] h-[100px] rounded border mr-2"></el-image>
+    <el-image v-if="typeof modelValue == 'string'" :src="modelValue" fit="cover"
+      class="w-[100px] h-[100px] rounded border mr-2"></el-image>
+    <div v-else class="flex flex-wrap">
+      <div class="relative mx-1 mb-2 w-[100px] h-[100px]" v-for="(url, index) in modelValue" :key="index">
+        <el-icon @click="removeImage(url)" class="absolute right-[5px] top-[5px] cursor-pointer bg-white rounded-full"
+          style="z-index: 10;">
+          <CircleClose />
+        </el-icon>
+        <el-image :src="url" fit="cover" class="w-[100px] h-[100px] rounded border mr-2"></el-image>
+      </div>
+    </div>
   </div>
 
   <div class="choose-image-btn" @click="open">
-    <el-icon :size="25" class="text-gray-500"><Plus /></el-icon>
+    <el-icon :size="25" class="text-gray-500">
+      <Plus />
+    </el-icon>
   </div>
   <el-dialog title="选择图片" v-model="dialogVisible" width="80%" top="5vh">
     <el-container class="bg-white rounded" style="height: 70vh">
@@ -77,10 +89,14 @@ let urls = [];
 const handleChoose = (e) => {
   urls = e.map((o) => o.url);
 };
+
+const removeImage = (url) => {
+  emit("update:modelValue", props.modelValue.filter(u => u != url))
+}
 </script>
 <style>
 .choose-image-btn {
-  @apply w-[100px] h-[100px] rounded border flex justify-center items-center cursor-pointer hover:(bg-gray-100);
+  @apply w-[100px] h-[100px] rounded border flex justify-center items-center cursor-pointer hover: (bg-gray-100);
 }
 
 .image-header {
