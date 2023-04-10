@@ -7,7 +7,7 @@
                 </ChooseImage>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" @click="submit">提交</el-button>
+                <el-button type="primary" @click="submit" :loading="loading">提交</el-button>
 
             </el-form-item>
         </el-form>
@@ -19,6 +19,7 @@
 import { ref, reactive } from "vue"
 import ChooseImage from "~/components/ChooseImage.vue"
 import { readGoods, setGoodsBanner } from "~/api/goods"
+import { toast } from "~/composables/util"
 
 const dialogVisible = ref(false)
 
@@ -28,16 +29,30 @@ const form = reactive({
 
 
 const goodsId = ref(0)
+
 const open = (row) => {
     goodsId.value = row.id
+    row.bannersLoading = true
     readGoods(goodsId.value).then(res => {
         form.banners = res.goodsBanner.map(o => o.url)
         dialogVisible.value = true
+    }).finally(() => {
+        row.bannersLoading = false
     })
 
 }
+const loading = ref(false)
+const emit = defineEmits(["reloadData"])
 const submit = () => {
+    loading.value = true
+    setGoodsBanner(goodsId.value, form).then(res => {
+        toast("设置轮播图成功")
+        dialogVisible.value = false
+        emit("reloadData")
 
+    }).finally(() => {
+        loading.value = false
+    })
 }
 
 defineExpose({
