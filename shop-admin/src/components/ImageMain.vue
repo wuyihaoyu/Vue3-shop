@@ -2,51 +2,20 @@
   <el-main class="image-main" v-loading="loading">
     <div class="top p-3">
       <el-row :gutter="10">
-        <el-col
-          :span="6"
-          :offset="0"
-          v-for="(item, index) in list"
-          :key="index"
-        >
-          <el-card
-            shadow="hover"
-            class="relative mb-3"
-            :body-style="{ padding: 0 }"
-            :class="{ 'border-blue-500': item.checked }"
-          >
-            <el-image
-              :src="item.url"
-              fit="cover"
-              :lazy="true"
-              class="w-full h-[150px]"
-              :preview-src-list="[item.url]"
-              :initial-index="0"
-            ></el-image>
+        <el-col :span="6" :offset="0" v-for="(item, index) in list" :key="index">
+          <el-card shadow="hover" class="relative mb-3" :body-style="{ padding: 0 }"
+            :class="{ 'border-blue-500': item.checked }">
+            <el-image :src="item.url" fit="cover" :lazy="true" class="w-full h-[150px]" :preview-src-list="[item.url]"
+              :initial-index="0"></el-image>
             <div class="image-title">{{ item.name }}</div>
             <div class="flex items-center justify-center p-2">
-              <el-checkbox
-              v-if="openChoose"
-                v-model="item.checked"
-                @change="handleChooseChange(item)"
-              ></el-checkbox>
+              <el-checkbox v-if="openChoose" v-model="item.checked" @change="handleChooseChange(item)"></el-checkbox>
 
-              <el-button
-                type="primary"
-                size="small"
-                text
-                @click="handleEdit(item)"
-                >重命名</el-button
-              >
-              <el-popconfirm
-                title="是否要删除该图片？"
-                confirmButtonText="确认"
-                cancelButtonText="取消"
-                @confirm="handleDelete(item.id)"
-              >
+              <el-button type="primary" size="small" text @click="handleEdit(item)">重命名</el-button>
+              <el-popconfirm title="是否要删除该图片？" confirmButtonText="确认" cancelButtonText="取消"
+                @confirm="handleDelete(item.id)">
                 <template #reference>
-                  <el-button type="primary" size="small" text class="!m-0"
-                    >删除</el-button
-                  >
+                  <el-button type="primary" size="small" text class="!m-0">删除</el-button>
                 </template>
               </el-popconfirm>
             </div>
@@ -55,22 +24,13 @@
       </el-row>
     </div>
     <div class="bottom">
-      <el-pagination
-        background
-        layout="prev, pager,next"
-        :total="total"
-        :current-page="currentPage"
-        :page-size="limit"
-        @current-change="getData"
-      />
+      <el-pagination background layout="prev, pager,next" :total="total" :current-page="currentPage" :page-size="limit"
+        @current-change="getData" />
     </div>
   </el-main>
 
   <el-drawer v-model="drawer" title="上传图片">
-    <UploadFile
-      :data="{ image_class_id }"
-      @success="handleUploadSuccess"
-    ></UploadFile>
+    <UploadFile :data="{ image_class_id }" @success="handleUploadSuccess"></UploadFile>
   </el-drawer>
 </template>
 
@@ -151,11 +111,16 @@ const handleUploadSuccess = () => {
   getData(1);
 };
 
-defineProps({
+const props = defineProps({
   openChoose: {
     type: Boolean,
     default: false,
   },
+  limit: {
+    type: Number,
+    default: 1
+
+  }
 });
 
 //选中的图片
@@ -164,9 +129,9 @@ const emit = defineEmits(["choose"]);
 const checkedImage = computed(() => list.value.filter((o) => o.checked));
 
 const handleChooseChange = (item) => {
-  if (item.checked && checkedImage.value.length > 1) {
+  if (item.checked && checkedImage.value.length > props.limit) {
     item.checked = false;
-    return toast("最多只能选中1张", "error");
+    return toast(`最多只能选中${props.limit}张`, "error");
   }
   emit("choose", checkedImage.value);
   console.log("传回的图片数据：", checkedImage.value);
