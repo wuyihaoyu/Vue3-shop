@@ -35,7 +35,7 @@
                 </el-form-item>
             </template>
             <template v-else>
-                多规格
+                <SkuCard/>
             </template>
         </el-form>
     </FormDrawer>
@@ -46,6 +46,7 @@ import { ref, reactive } from "vue"
 import FormDrawer from "~/components/FormDrawer.vue";
 import { readGoods, updateGoodsSkus } from "~/api/goods"
 import { toast } from "~/composables/util"
+import SkuCard from "./components/SkuCard.vue"
 
 const formDrawerRef = ref(null)
 
