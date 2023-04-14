@@ -1,6 +1,6 @@
 import exp from "constants"
 import {ref } from "vue"
-import { createGoodsSkusCard } from "~/api/goods.js"
+import { createGoodsSkusCard,updateGoodsSkusCard } from "~/api/goods.js"
 
 export const goodsId = ref(0)
 
@@ -37,7 +37,22 @@ export function addSkuCardEvent(){
 
         btnLoading.value = false
     })
-
+}
+//修改规格选项
+export function handleUpdate(item){
+    item.loading = true
+    updateGoodsSkusCard(item.id,{
+        "goods_id":item.goods_id,
+        "name":item.text,
+        "order":item.order,
+        "type":0
+    }).then(res=>{
+         item.name = item.text
+    }).catch(err=>{
+         item.text = item.name
+    }).finally(()=>{
+      item.loading = false
+    })
 }
 
 //初始化规格的值
