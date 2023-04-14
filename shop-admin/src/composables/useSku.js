@@ -1,6 +1,6 @@
 import exp from "constants"
 import {ref } from "vue"
-import { createGoodsSkusCard,updateGoodsSkusCard } from "~/api/goods.js"
+import { createGoodsSkusCard,updateGoodsSkusCard,deleteGoodsSkusCard } from "~/api/goods.js"
 
 export const goodsId = ref(0)
 
@@ -54,7 +54,16 @@ export function handleUpdate(item){
       item.loading = false
     })
 }
-
+//删除规格选项
+export function handleDelete(item){
+    item.loading = true
+    deleteGoodsSkusCard(item.id).then(res=>{
+        const i = sku_card_list.value.findIndex(o=>o.id==item.id)
+        if(i!=-1){
+            sku_card_list.value.splice(i,1)
+        }
+    })
+}
 //初始化规格的值
 export function initSkusCardItem(id){
     const item = sku_card_list.value.find(o=> o.id==id)
