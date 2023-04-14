@@ -2,6 +2,7 @@
     <div>
         <div v-for="(tag,index) in item.goodsSkusCardValue" :key="index">
             {{tag.text}}
+           
         </div>
     </div>
 </template>
@@ -15,6 +16,7 @@ const props = defineProps({
 
 
 const { item } = initSkusCardItem(props.skuCardId)
+console.log("1111:",item)
 
 
 </script>

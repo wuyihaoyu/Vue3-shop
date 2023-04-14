@@ -2,6 +2,7 @@ import exp from "constants"
 import {ref } from "vue"
 import { createGoodsSkusCard,updateGoodsSkusCard,deleteGoodsSkusCard } from "~/api/goods.js"
 
+import {useArrayMoveUp,useArrayMoveDown} from "~/composables/util"
 export const goodsId = ref(0)
 
 export const sku_card_list = ref([])
@@ -63,6 +64,16 @@ export function handleDelete(item){
             sku_card_list.value.splice(i,1)
         }
     })
+}
+
+//排序规格选项
+export function sortCard(action,index){
+    if(action=="up"){
+        useArrayMoveUp(sku_card_list.value,index)
+    }else{
+        useArrayMoveDown(sku_card_list.value,index)
+    }
+    
 }
 //初始化规格的值
 export function initSkusCardItem(id){
