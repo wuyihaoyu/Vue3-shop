@@ -27,16 +27,18 @@
                     </el-button>
                 </div>
             </template>
-            <SkuCardItem  :skuCardId="item.id"/>
+            <SkuCardItem :skuCardId="item.id" />
         </el-card>
-        <el-button type="success" size="small">添加规格</el-button>
+        <el-button type="success" size="small" :loading="btnLoading" @click="addSkuCardEvent">添加规格</el-button>
     </el-form-item>
 </template>
 
 <script setup>
 import SkuCardItem from "./SkuCardItem.vue"
 import {
-    sku_card_list
+    sku_card_list,
+    addSkuCardEvent,
+    btnLoading
 } from "~/composables/useSku.js"
 </script>
 
