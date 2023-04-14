@@ -35,7 +35,7 @@
                 </el-form-item>
             </template>
             <template v-else>
-                <SkuCard/>
+                <SkuCard />
             </template>
         </el-form>
     </FormDrawer>
@@ -47,6 +47,7 @@ import FormDrawer from "~/components/FormDrawer.vue";
 import { readGoods, updateGoodsSkus } from "~/api/goods"
 import { toast } from "~/composables/util"
 import SkuCard from "./components/SkuCard.vue"
+import { initSkuCardList, goodsId } from "~/composables/useSku.js"
 
 const formDrawerRef = ref(null)
 
@@ -62,7 +63,6 @@ const form = reactive({
 })
 
 
-const goodsId = ref(0)
 
 const open = (row) => {
     goodsId.value = row.id
@@ -76,6 +76,7 @@ const open = (row) => {
             "weight": 0,
             "volume": 0
         }
+        initSkuCardList(res)
         formDrawerRef.value.open()
     }).finally(() => {
         row.skusLoading = false
